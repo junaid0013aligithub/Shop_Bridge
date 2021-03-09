@@ -1,0 +1,175 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+
+
+<div class="container">
+    <div class="container" style="font-family:Candara; font-size:large; text-align:center; color:darkblue; font-weight:700; margin-top:15px;">
+
+        <h2>Product List</h2>
+    </div>
+</div>
+
+<div class="form-inline input_sec text-center">
+    <input type="text" id="productname" name="productname" placeholder="Product Name" maxlength="20" required />
+    <input type="submit" class="btn btn-primary btn-sm" id="btnSearch" name="btnSearch" value="Search" />
+    <input type="reset" class="btn btn-danger btn-sm" id="btnclear" name="btnclear" value="Clear" />
+    <a class="btn btn-sm btn-info" href="@Context.Request.PathBase/Product/AddProduct">Insert Product</a>
+</div>
+
+<div>
+    <br />
+    <br />
+
+</div>
+<div class="container col-md-8 col-sm-offset-3" style="text-align:center;">
+    <table style="text-align:center;width:600px;" id="tblEmployee" class="tblEmployee">
+      
+        <tbody> </tbody>
+    </table>
+</div>
+
+<script src="~/jq/jq.js"></script>
+<link rel="stylesheet" type="text/css" href="/DataTables/datatables.css">
+
+<script type="text/javascript" charset="utf8" src="/DataTables/datatables.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        LoadAllProduct();
+        $('#tblEmployee').DataTable();
+    });
+
+   
+
+    $('#btnSearch').click(function () {
+        var productname = $("#productname").val();
+        if (productname == "") {
+
+            alert("Please Enter Product Name");
+            return false;
+        }
+        LoadAllProduct();
+    });
+
+
+
+  function  LoadAllProduct()
+  {
+      $('#tblEmployee').empty();
+      var productname = $("#productname").val();
+     
+        $.ajax
+        ({
+            type: 'POST',
+            url: '@Url.Action("GetAllProducts")',
+                //dataType: 'json',
+                //contentType: 'application/json; charset=utf-8',
+                data: { "productName": productname},
+            success: function(data)
+            {
+                
+            var items = '';
+                var rows = "<tr>" +
+                     "<th align='left' class='EmployeeTableTH'>Id </th>"+
+                "<th align='left' class='EmployeeTableTH'>Name</th>"+
+               " <th align='left' class='EmployeeTableTH'>Price</th>"+
+               " <th align='left' class='EmployeeTableTH'>Description</th>"+
+                    "<th align='left' class='EmployeeTableTH'>Image</th>" +
+                    "<th align='left' class='EmployeeTableTH'>Update</th>" +
+                        "</tr>";
+            $('#tblEmployee').append(rows);
+
+                $.each(data, function (i, item)
+                {
+
+                    var rows = "<tr>" +
+                        "<td class='EmployeeTableTD'>" + item.Id + "</td>" +
+                        "<td class='EmployeeTableTD'>" + item.Name + "</td>" +
+                        "<td class='EmployeeTableTD'>" + item.Price + "</td>" +
+                        "<td class='EmployeeTableTD'>" + item.Description + "</td>" +
+                        "<td class='EmployeeTableTD'>" +
+                        "<img src='" + item.Image + "' alt='" + item.Name + "' id='" + item.Id + "'  style='width:40px; height:40px;' height = '40px;' width ='40px;' /> " +
+                    "</td > " +
+                "<td class='EmployeeTableTD'>" +
+                        "<button type='button' onclick='UpdateProduct(" + item.Id + ");' class='btn btn-default' title='Update : "+item.Name+"'>" +
+                "<span class='glyphicon glyphicon-edit' />" +
+                "</button>" +
+                "<button type='button' onclick='DeleteProduct(" + item.Id + ");' class='btn btn-default' title='Delete : " + item.Name +"'>" +
+                "<span class='glyphicon glyphicon-remove' />" +
+                "</button>" +
+                "</td>" +
+                "</tr>";
+            $('#tblEmployee').append(rows);
+            });
+            },
+            error: function(ex)
+            {
+            alert("No Data Found");
+            }
+            });
+            
+    }
+
+    function UpdateProduct(productid) {
+        location.href = '@Context.Request.PathBase/Product/GetProductByID?productId=' + productid;
+        
+    }
+    function DeleteProduct(productid) {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteProduct")',
+               // dataType: 'json',
+            //contentType: 'application/json; charset=utf-8',
+            data: { "productId": productid },
+            success: function (res) {
+                alert(res.Message);
+                LoadAllProduct();
+            },
+            error: function (res) {
+
+
+            }
+        });
+    }
+
+
+
+
+</script>
+
+
+
+<style type="text/css">
+    .tblEmployee {
+        font-family: verdana, arial, sans-serif;
+        font-size: 11px;
+        color: #333333;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+        align-content: center;
+    }
+
+    .EmployeeTableTH {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #dedede;
+        text-align: center;
+    }
+
+    .EmployeeTableTD {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #ffffff;
+        text-align: center;
+    }
+</style>  
