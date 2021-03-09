@@ -1,0 +1,96 @@
+
+Create Database ShopBridge
+
+Create Table Roles(
+ID int IDENTITY(1,1) Primary Key,
+RoleName varchar(20),
+IsActive bit,
+CreatedBy int null,
+CreatedOn DateTime null,
+UpdatedBy int null,
+UpdatedOn DateTime null)
+
+
+Create Table Users(
+ID int IDENTITY(1,1) Primary key,
+UserName varchar(30),
+Password varchar(30),
+IsActive bit,
+RoleID int,
+CreatedBy int null,
+CreatedOn DateTime null,
+UpdatedBy int null,
+UpdatedOn DateTime null,
+FOREIGN KEY (RoleID) REFERENCES Roles(ID))
+
+
+
+Create Table Menus (
+ID int IDENTITY(1,1) Primary Key ,
+MenuName varchar(20),
+IsActive bit,
+ParentID int,
+Controller varchar(20),
+Action varchar(20),
+RoleID int,
+CreatedBy int,
+CreatedOn DateTime,
+UpdatedBy DateTime,
+UpdatedOn DateTime,
+ FOREIGN KEY (RoleID) REFERENCES Roles(ID))
+
+
+
+
+Create Table Products(
+ID int IDENTITY(1,1) Primary Key,
+Name varchar(30) ,
+Description varchar(50) null,
+Price decimal,
+Image varchar(8000),
+CreatedBy int null,
+CreatedOn DateTime null,
+UpdatedBy int null,
+UpdatedOn DateTime null)
+
+
+
+
+Insert  into Roles (RoleName,IsActive,CreatedOn)
+                Values
+		('Administrator',1,CURRENT_TIMESTAMP)
+				
+				
+Insert  into Roles (RoleName,IsActive,CreatedOn)
+                Values
+		('User',1,CURRENT_TIMESTAMP)
+
+
+Insert into Users (UserName,Password,IsActive,RoleID)
+            values
+('Test','P@ssw0rd',1,1)
+Insert into Users (UserName,Password,IsActive,RoleID)
+            values
+('Test User','P@ssw0rd',1,2)
+
+
+
+
+Insert into Menus (MenuName,IsActive,Controller,Action,RoleID,CreatedOn)
+        Values
+		('Home',1,'Home','Index',1,CURRENT_TIMESTAMP)
+
+		
+Insert into Menus (MenuName,IsActive,RoleID,CreatedOn)
+        Values
+		('About Us',1,1,CURRENT_TIMESTAMP)
+
+
+Insert into Menus (MenuName,IsActive,Controller,Action,RoleID,CreatedOn)
+        Values
+		('Product',1,'Product','Index',1,CURRENT_TIMESTAMP)
+
+		
+Insert into Menus (MenuName,IsActive,ParentID,Controller,Action,RoleID,CreatedOn)
+        Values
+		('Mobile',1,3,'Product','Index',1,CURRENT_TIMESTAMP)
